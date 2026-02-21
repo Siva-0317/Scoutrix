@@ -4,7 +4,7 @@ const cors = require('cors');
 
 // We will uncomment these once we create the route files!
 const authRoutes = require('./routes/auth.routes');
-// const postRoutes = require('./routes/post.routes');
+const postRoutes = require('./routes/post.routes');
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 // Routes
 app.use('/api/auth', authRoutes);
-// app.use('/api', postRoutes);
+app.use('/api', postRoutes);
 
 // A simple health-check route to test the server
 app.get('/health', (req, res) => {
