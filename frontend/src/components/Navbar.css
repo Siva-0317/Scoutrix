@@ -154,12 +154,100 @@
     box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
 }
 
+/* Mobile Menu Icon */
+.mobile-menu-icon {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 28px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1001;
+    margin-left: max(1rem, auto);
+}
+
+.mobile-menu-icon .line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--text-main, #fff);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.mobile-menu-icon .line.active.line1 {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.mobile-menu-icon .line.active.line2 {
+    opacity: 0;
+}
+
+.mobile-menu-icon .line.active.line3 {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+.mobile-login-btn {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .navbar {
-        padding: 1rem 2rem;
+    .navbar-container {
+        padding: 0 1.5rem;
     }
 
-    .navbar-links {
+    .mobile-menu-icon {
+        display: flex;
+        margin-left: auto;
+    }
+
+    .navbar-actions {
         display: none;
+    }
+
+    .navbar-tabs {
+        position: fixed;
+        top: 60px;
+        left: -100%;
+        width: 100%;
+        height: calc(100vh - 60px);
+        background: rgba(10, 15, 30, 0.98);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        flex-direction: column;
+        justify-content: flex-start;
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+        /* Ensure space at the bottom */
+        gap: 1.5rem;
+        /* Reduced gap to fit everything better */
+        transition: left 0.4s ease;
+        margin-left: 0;
+        overflow-y: auto;
+        /* Make the menu scrollable if it doesn't fit */
+        overflow-x: hidden;
+    }
+
+    .navbar-tabs.mobile-active {
+        left: 0;
+    }
+
+    .navbar-tab {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        font-size: 1.3rem;
+    }
+
+    .mobile-login-btn {
+        display: flex;
+        /* Override display: none */
+        justify-content: center;
+        align-items: center;
+        margin: 1rem auto 2rem auto;
+        /* Adjusted margins */
+        width: 80%;
+        text-align: center;
+        flex-shrink: 0;
+        /* Prevent the button from getting squished */
     }
 }

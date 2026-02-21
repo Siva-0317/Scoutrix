@@ -491,17 +491,25 @@
 
 
 /* --- RESPONSIVE DESIGN FOR MOBILE --- */
+/* --- RESPONSIVE DESIGN FOR MOBILE --- */
 @media (max-width: 900px) {
     .auth-modal-overlay {
-        padding: 0;
-        align-items: flex-end;
-        /* Drop to bottom like a sheet on mobile */
+        padding: 1rem;
+        align-items: center;
     }
 
     .auth-container {
-        min-height: 85vh;
-        border-radius: 20px 20px 0 0;
-        height: 85vh;
+        border-radius: 20px;
+        height: auto;
+        min-height: 550px;
+        /* Let it define a solid height for mobile */
+        max-height: 95vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        /* Allow full modal scrolling if needed */
+        overflow-x: hidden;
     }
 
     /* Stack the overlay ON TOP of the forms */
@@ -509,23 +517,70 @@
     .sign-up-container {
         width: 100%;
         left: 0;
-        top: 250px;
-        height: calc(100% - 250px);
+        top: 200px;
+        /* Space for the overlay image */
+        height: max-content;
+        /* Let form dictate height */
+        position: relative;
     }
 
     .overlay-container {
         width: 100%;
-        height: 250px;
+        height: 200px;
         left: 0;
         top: 0;
         border-radius: 20px 20px 0 0;
+        position: absolute;
+        /* Keep it pinned to the top */
     }
 
-    .auth-container.right-panel-active .sign-in-container,
+    /* Ensure form padding is comfortable */
+    .auth-form.light-theme-form {
+        padding: 30px 20px 40px 20px;
+        min-height: 400px;
+        height: auto;
+        justify-content: flex-start;
+        /* Prevent centering crunch */
+    }
+
+    /* Animation adjustments for stacking */
+    .auth-container.right-panel-active .sign-in-container {
+        transform: translateX(-100%);
+        position: absolute;
+        height: 100%;
+        overflow: hidden;
+        display: none;
+        /* TRULY hide it to fix scroll overflow */
+    }
+
     .auth-container.right-panel-active .sign-up-container {
         transform: translateX(0);
+        position: relative;
+        height: max-content;
+        overflow: visible;
+        display: block;
+        /* Make sure it's visible when active */
     }
 
+    .sign-in-container {
+        transform: translateX(0);
+        position: relative;
+        height: max-content;
+        overflow: visible;
+        display: block;
+        /* Make sure it's visible when active */
+    }
+
+    .sign-up-container {
+        transform: translateX(100%);
+        position: absolute;
+        height: 100%;
+        overflow: hidden;
+        display: none;
+        /* TRULY hide it to fix scroll overflow */
+    }
+
+    /* Overlay image static on mobile */
     .auth-container.right-panel-active .overlay-container {
         transform: translateX(0);
         border-radius: 20px 20px 0 0;
@@ -543,43 +598,60 @@
 
     .overlay-panel {
         width: 100%;
-        padding: 0 20px;
+        padding: 0 15px;
     }
 
+    /* Swap the text in the overlay */
     .overlay-left {
         transform: translateX(0);
         opacity: 0;
         pointer-events: none;
+        z-index: 1;
     }
 
     .auth-container.right-panel-active .overlay-left {
         transform: translateX(0);
         opacity: 1;
         pointer-events: auto;
+        z-index: 5;
     }
 
     .overlay-right {
         transform: translateX(0);
         opacity: 1;
         pointer-events: auto;
+        z-index: 5;
     }
 
     .auth-container.right-panel-active .overlay-right {
         transform: translateX(0);
         opacity: 0;
         pointer-events: none;
-    }
-
-    .auth-form.light-theme-form {
-        padding: 20px 30px;
+        z-index: 1;
     }
 
     .overlay-title.has-shadow {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .overlay-desc.has-shadow {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn-secondary.ghost {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
     }
 
     .auth-form.light-theme-form .form-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .auth-form.light-theme-form .form-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
     }
 
     .input-row {
@@ -588,9 +660,16 @@
     }
 
     .form-scroll-area {
-        max-height: 100%;
+        max-height: none;
+        /* Let it flow naturally on mobile */
         overflow-y: visible;
         mask-image: none;
         -webkit-mask-image: none;
+        padding-top: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-auth-submit {
+        margin-top: 1rem;
     }
 }
