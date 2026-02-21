@@ -1,5 +1,6 @@
 const User = require('../models/user.model');
 const nodemailer = require('nodemailer');
+const { recalculateScoutScore } = require('../utils/scoringEngine');
 
 
 
@@ -36,6 +37,9 @@ exports.toggleSavePlayer = async (req, res) => {
 
         // 4. Save the updated recruiter document
         await recruiter.save();
+
+        // Recalculate the athlete's score to reflect the new Validation points
+        recalculateScoutScore(athleteId);
 
         res.status(200).json({ 
             message: isSaved ? 'Player removed from saved list' : 'Player saved successfully',
@@ -95,72 +99,118 @@ exports.sendTrialInvite = async (req, res) => {
         const dateString = trialDate ? `We would like to see you on: ${trialDate}` : 'We will reach out with specific dates soon.';
 
         // 3. Construct the Email
-        const mailOptions = {
-            from: "abhinavanil800@gmail.com",
-            to: athlete.email, 
-            subject: `🎉 Trial Invitation from ${recruiter.organization}!`,
-            html: `
-            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f5f7; padding: 40px 20px; color: #333333;">
-                <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); border: 1px solid #e5e7eb;">
-                    
-                    <div style="background-color: #2563eb; padding: 35px 40px; text-align: center;">
-                        <h1 style="color: #ffffff; margin: 0; font-size: 28px; letter-spacing: 1.5px;">SCOUTRIX</h1>
-                        <p style="color: #bfdbfe; margin: 8px 0 0 0; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Official Trial Invitation</p>
-                    </div>
+const mailOptions = {
+  from: "abhinavanil800@gmail.com",
+  to: athlete.email,
+  subject: `🎉 Trial Invitation from ${recruiter.organization}!`,
+  html: `
+  <body style="margin:0;padding:0;background:#d9e2b7;font-family:'Plus Jakarta Sans',Arial,Helvetica,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+  <td align="center" style="padding:30px 0;">
 
-                    <div style="padding: 40px;">
-                        <h2 style="margin-top: 0; color: #111827; font-size: 22px;">Hello ${athlete.name},</h2>
-                        
-                        <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">
-                            Great news! <strong>${recruiter.name}</strong> from <strong>${recruiter.organization}</strong> has reviewed your Scoutrix profile and AI Stat Card. They were highly impressed by your skills as a <strong>${athlete.playerRole}</strong> and want to invite you for an official trial.
-                        </p>
+  <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:24px;overflow:hidden;">
 
-                        <div style="background-color: #f8fafc; border-left: 4px solid #2563eb; padding: 20px 25px; margin: 30px 0; border-radius: 0 8px 8px 0;">
-                            <p style="margin: 0 0 8px 0; font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">Message from the Scout</p>
-                            <p style="margin: 0; font-size: 16px; font-style: italic; color: #1e293b; line-height: 1.5;">
-                                "${customMessage || 'We look forward to seeing you in action!'}"
-                            </p>
-                        </div>
+  <!-- HEADER -->
+  <tr>
+  <td align="center" style="padding:40px 40px 10px 40px;">
+      <h1 style="margin:0;font-size:38px;color:#080808;">SCOUTRIX</h1>
+      <p style="margin:8px 0 0;color:#6b7280;letter-spacing:2px;font-weight:600;">
+        OFFICIAL TRIAL INVITATION
+      </p>
+  </td>
+  </tr>
 
-                        <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
-                            <tr>
-                                <td style="padding: 14px 0; border-bottom: 1px solid #e2e8f0;">
-                                    <strong style="color: #0f172a; font-size: 15px;">🗓️ Trial Details</strong>
-                                </td>
-                                <td style="padding: 14px 0; border-bottom: 1px solid #e2e8f0; color: #475569; text-align: right; font-size: 15px;">
-                                    ${trialDate || 'Dates TBD soon'}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 14px 0; border-bottom: 1px solid #e2e8f0;">
-                                    <strong style="color: #0f172a; font-size: 15px;">📞 Contact Rep</strong>
-                                </td>
-                                <td style="padding: 14px 0; border-bottom: 1px solid #e2e8f0; color: #475569; text-align: right; font-size: 15px;">
-                                    ${recruiter.phoneNumber}
-                                </td>
-                            </tr>
-                        </table>
+  <!-- BODY TEXT -->
+  <tr>
+  <td style="padding:10px 50px 10px 50px;">
+      <h2 style="margin-top:20px;font-size:26px;color:#111827;">
+        Hello ${athlete.name},
+      </h2>
 
-                        <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">
-                            Please reply directly to this email or reach out via the phone number above to confirm your attendance.
-                        </p>
+      <p style="font-size:17px;line-height:1.7;color:#4b5563;">
+        Great news! <strong>${recruiter.name}</strong> from 
+        <strong>${recruiter.organization}</strong> has reviewed your Scoutrix
+        profile and AI Stat Card and were highly impressed by your performance
+        as a <strong>${athlete.playerRole}</strong>.
+      </p>
 
-                        <p style="font-size: 16px; line-height: 1.6; color: #111827; margin-top: 35px; font-weight: bold;">
-                            Keep up the great work,<br>
-                            <span style="color: #2563eb;">The Team Voyagers</span>
-                        </p>
-                    </div>
+      <p style="font-size:17px;line-height:1.7;color:#4b5563;">
+        You’ve officially been invited to attend a professional trial.
+      </p>
+  </td>
+  </tr>
 
-                    <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
-                        <p style="margin: 0; font-size: 12px; color: #94a3b8;">
-                            Powered by the Scoutrix AI Scouting Network
-                        </p>
-                    </div>
+  <!-- SCOUT MESSAGE CARD -->
+  <tr>
+  <td style="padding:20px 50px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f2fff4;border-radius:18px;">
+      <tr>
+        <td style="padding:26px;">
+          <p style="margin:0 0 10px;font-size:13px;font-weight:800;color:#16a34a;letter-spacing:1px;">
+            MESSAGE FROM THE SCOUT
+          </p>
+          <p style="margin:0;font-size:18px;color:#1f2937;font-style:italic;line-height:1.6;">
+            "${customMessage || 'We look forward to seeing you in action!'}"
+          </p>
+        </td>
+      </tr>
+    </table>
+  </td>
+  </tr>
 
-                </div>
-            </div>
-            `
-        };
+  <!-- DETAILS CARD -->
+  <tr>
+  <td style="padding:10px 50px 40px 50px;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="padding:16px 0;border-bottom:1px solid #e5e7eb;font-weight:600;">
+          🗓️ Trial Date
+        </td>
+        <td align="right" style="padding:16px 0;border-bottom:1px solid #e5e7eb;color:#475569;">
+          ${trialDate || 'Dates TBD soon'}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:16px 0;border-bottom:1px solid #e5e7eb;font-weight:600;">
+          📞 Recruiter Contact
+        </td>
+        <td align="right" style="padding:16px 0;border-bottom:1px solid #e5e7eb;color:#475569;">
+          ${recruiter.phoneNumber}
+        </td>
+      </tr>
+    </table>
+  </td>
+  </tr>
+
+  <!-- CTA -->
+  <tr>
+  <td align="center" style="padding:0 50px 50px 50px;">
+    <a href="mailto:${recruiter.email}" 
+       style="display:inline-block;background:#16a34a;color:#ffffff;
+       padding:18px 34px;border-radius:50px;font-size:18px;
+       text-decoration:none;font-weight:600;">
+       Confirm Attendance
+    </a>
+  </td>
+  </tr>
+
+  <!-- FOOTER -->
+  <tr>
+  <td style="background:#0b0707;color:#ffffff;padding:35px;text-align:center;">
+      <p style="margin:0;font-size:14px;color:#ffffffcc;">
+        Powered by the Scoutrix AI Scouting Network
+      </p>
+  </td>
+  </tr>
+
+  </table>
+  </td>
+  </tr>
+  </table>
+  </body>
+  `
+};
 
         // 4. Send the Email
         await transporter.sendMail(mailOptions);
