@@ -2,6 +2,7 @@ const Post = require('../models/post.model');
 const fs = require('fs');
 const ImageKit = require('imagekit'); // The Node.js SDK
 const { GoogleGenAI, createUserContent, createPartFromUri } = require('@google/genai');
+const { recalculateScoutScore } = require('../utils/scoringEngine');
 
 // 1. Initialize ImageKit (Backend Configuration)
 const imagekit = new ImageKit({
@@ -54,22 +55,23 @@ exports.uploadVideo = async (req, res) => {
         // ... (Previous code: video uploads to ImageKit and Gemini, and polling finishes)
 
         // 6. Define the expected JSON keys based on the Athlete's profile
+        // 6. Define the expected JSON keys based on the Athlete's profile
         const { sport, playerRole, subRole, style } = req.user;
         let expectedMetrics = "";
 
         if (sport === 'Cricket') {
             if (playerRole === 'Batsman' || playerRole === 'All-Rounder') {
-                expectedMetrics = "'footwork_score' (1-10), 'timing_score' (1-10), 'shot_selection' (1-10), 'signature_shot' (String)";
+                expectedMetrics = "'footwork_score' (Number 1-10), 'timing_score' (Number 1-10), 'shot_selection' (Number 1-10), 'signature_shot' (String)";
             } else if (playerRole === 'Bowler') {
-                expectedMetrics = "'run_up_balance' (1-10), 'release_point_score' (1-10), 'line_and_length_rating' (1-10), 'stock_delivery' (String)";
+                expectedMetrics = "'run_up_balance' (Number 1-10), 'release_point_score' (Number 1-10), 'line_and_length_rating' (Number 1-10), 'stock_delivery' (String)";
             }
         } else if (sport === 'Badminton') {
-            expectedMetrics = "'court_coverage' (1-10), 'smash_power' (1-10), 'reflex_speed' (1-10), 'dominant_stroke' (String)";
+            expectedMetrics = "'court_coverage' (Number 1-10), 'smash_power' (Number 1-10), 'reflex_speed' (Number 1-10), 'dominant_stroke' (String)";
         } else if (sport === 'Football') {
-            expectedMetrics = "'ball_control' (1-10), 'agility_score' (1-10), 'passing_accuracy' (1-10), 'play_style' (String)";
+            expectedMetrics = "'ball_control' (Number 1-10), 'agility_score' (Number 1-10), 'passing_accuracy' (Number 1-10), 'play_style' (String)";
         } else {
             // A generic fallback just in case
-            expectedMetrics = "'athleticism_score' (1-10), 'technique_rating' (1-10), 'game_awareness' (1-10), 'primary_strength' (String)";
+            expectedMetrics = "'athleticism_score' (Number 1-10), 'technique_rating' (Number 1-10), 'game_awareness' (Number 1-10), 'primary_strength' (String)";
         }
 
         // 7. The Magic Dynamic Prompt
@@ -88,7 +90,7 @@ exports.uploadVideo = async (req, res) => {
         ${expectedMetrics}
         And provide a 'scout_summary' (max 20 words highlighting their potential).
 
-        Return ONLY a valid JSON object with those exact keys. No markdown, no conversational text, no extra properties.`;
+        CRITICAL REQUIREMENT: Return ONLY a valid JSON object with those exact keys. All metric scores MUST be raw numerical values (e.g., 8.5) and NOT strings. Do not include text like "/10". No markdown, no conversational text, no extra properties.`;
 
         // 8. Generate Content using the cutting-edge model
         const response = await ai.models.generateContent({
@@ -113,6 +115,9 @@ exports.uploadVideo = async (req, res) => {
             aiMetrics: aiMetrics,
             scoutSummary: aiMetrics.scout_summary || aiMetrics.scoutSummary
         });
+
+        // Trigger score recalculation in the background asynchronously 
+        recalculateScoutScore(req.user._id);
 
         // 11. Delete the temporary file from your local Node server
         fs.unlinkSync(filePath);

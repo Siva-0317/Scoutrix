@@ -23,7 +23,11 @@ const userSchema = new mongoose.Schema({
     bio: { type: String },
     height: { type: String },
     weight: { type: String },
-    trustScore: { type: Number, default: 0 },
+    scoutScore: {
+        metaScore: { type: Number, default: 0 }, // The 0-1000 master score
+        sportScore: { type: Number, default: 0 }, // The 0-1000 athletic rating
+        subScores: { type: mongoose.Schema.Types.Mixed, default: {} } // The raw AI metrics
+    },
 
     // Recruiter-Specific Fields
     organization: { type: String }, // e.g., "Local Cricket Academy"
