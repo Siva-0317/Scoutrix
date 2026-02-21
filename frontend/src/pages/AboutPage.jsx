@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './AboutPage.css';
 
-const AboutPage = () => {
+const AboutPage = ({ onOpenAuth }) => {
     // Ensure the page scrolls to top on navigation
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -41,7 +42,7 @@ const AboutPage = () => {
                     </div>
 
                     <div className="about-hero-actions">
-                        <button className="btn-primary">
+                        <button className="btn-primary" onClick={onOpenAuth}>
                             Join the Revolution
                             <span className="arrow">→</span>
                         </button>
