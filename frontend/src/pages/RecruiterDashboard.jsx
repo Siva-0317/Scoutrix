@@ -4,6 +4,7 @@ import AIVideoAnalysis from './AIVideoAnalysis';
 import RecruiterPost from './RecruiterPost';
 import RecruiterApplicants from './RecruiterApplicants';
 import AutomatedRecruitment from './AutomatedRecruitment';
+import Leaderboard from './Leaderboard';
 import './RecruiterDashboard.css';
 
 /* ── Icons ── */
@@ -69,12 +70,25 @@ const NAV_ITEMS = [
         id: 'auto', label: 'AI Match', color: '#f43f5e',
         icon: (
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
             </svg>
         ),
         iconFilled: (
             <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 14.5a4.5 4.5 0 0 1-4.5 4.5h-1a1 1 0 0 1 0-2h1a2.5 2.5 0 0 0 0-5h-5a4.5 4.5 0 0 1 0-9h1a1 1 0 0 1 0 2h-1a2.5 2.5 0 0 0 0 5h5a4.5 4.5 0 0 1 4.5 4.5zM12 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1z" />
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" />
+            </svg>
+        ),
+    },
+    {
+        id: 'leaderboard', label: 'Rankings', color: '#fbbf24',
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+        ),
+        iconFilled: (
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 20V10a1 1 0 0 0-2 0v10h2zm-6 0V4a1 1 0 0 0-2 0v16h2zm-6 0v-6a1 1 0 0 0-2 0v6h2z" />
             </svg>
         ),
     }
@@ -121,6 +135,7 @@ const RecruiterDashboard = ({ user }) => {
             case 'post': return <RecruiterPost user={user} />;
             case 'recruit': return <RecruiterApplicants />;
             case 'auto': return <AutomatedRecruitment />;
+            case 'leaderboard': return <Leaderboard theme={theme} />;
             default: return null;
         }
     };

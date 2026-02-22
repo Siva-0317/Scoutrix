@@ -11,10 +11,17 @@ import ByRegionPage from './pages/ByRegionPage';
 import AuthModal from './components/AuthModal';
 import AthleteDashboard from './pages/AthleteDashboard';
 import RecruiterDashboard from './pages/RecruiterDashboard';
+import { useAutoTranslate } from './hooks/useAutoTranslate';
+import InstallPrompt from './components/InstallPrompt';
+import SavedProfiles from './pages/SavedProfiles';
 import './App.css';
 
 function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState('en-IN'); // Default English
+
+  // Initialize the auto-translate hook globally
+  useAutoTranslate(currentLanguage);
 
   // ── Global auth state, persisted in localStorage ──
   const [user, setUser] = useState(() => {
@@ -45,10 +52,13 @@ function App() {
 
   return (
     <div className="app-container">
+      <InstallPrompt />
       <Navbar
         user={user}
         onOpenAuth={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
+        currentLanguage={currentLanguage}
+        onLanguageChange={setCurrentLanguage}
       />
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -59,6 +69,7 @@ function App() {
         <Route path="/regions" element={<ByRegionPage onOpenAuth={() => setIsAuthModalOpen(true)} />} />
         <Route path="/dashboard/athlete" element={<AthleteDashboard user={user} />} />
         <Route path="/dashboard/recruiter" element={<RecruiterDashboard user={user} />} />
+        <Route path="/saved-profiles" element={<SavedProfiles user={user} />} />
       </Routes>
       <Footer />
       <AuthModal

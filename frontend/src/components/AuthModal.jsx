@@ -45,8 +45,9 @@ const SPORTS_TAXONOMY = {
 
 const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
     const [isLogin, setIsLogin] = useState(true);
-    const [role, setRole] = useState('athlete'); // 'athlete' or 'recruiter'
+    const [role, setRole] = useState('athlete');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -79,6 +80,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
         setIsLogin(!isLogin);
         if (isLogin) setRole('athlete');
         setError('');
+        setSuccess('');
     };
 
     const handleInputChange = (e) => {
@@ -101,6 +103,7 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
         setIsLoading(true);
 
         try {
@@ -115,26 +118,27 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include', // ← required to send/receive httpOnly cookies cross-origin
+                credentials: 'include',
                 body: JSON.stringify(payload)
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                const action = isLogin ? 'Login failed' : 'Signup failed';
-                throw new Error(`${action}: ${data.message || 'Something went wrong'}`);
+                throw new Error(data.message || 'Something went wrong. Please try again.');
             }
 
             if (isLogin) {
-                // Navigate first, then update global state
                 navigate(`/dashboard/${data.role}`);
                 if (onLoginSuccess) onLoginSuccess(data);
             } else {
-                // Signup successful — switch to login tab
-                setIsLogin(true);
+                // Signup success — show inline message, switch to login after delay
+                setSuccess('Account created successfully! You can now log in.');
                 setFormData(prev => ({ ...prev, password: '' }));
-                alert('Account created successfully! Please log in.');
+                setTimeout(() => {
+                    setSuccess('');
+                    setIsLogin(true);
+                }, 2500);
             }
         } catch (err) {
             setError(err.message);
@@ -185,7 +189,18 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
 
                         <div className="form-scroll-area">
                             <span className="form-subtitle">Use your email for registration</span>
-                            {error && <div className="auth-error-message">{error}</div>}
+                            {error && (
+                                <div className="auth-feedback auth-feedback--error">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                                    {error}
+                                </div>
+                            )}
+                            {success && (
+                                <div className="auth-feedback auth-feedback--success">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                                    {success}
+                                </div>
+                            )}
 
                             {/* Common Signup Fields */}
                             <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleInputChange} required />
@@ -245,7 +260,12 @@ const AuthModal = ({ isOpen, onClose, onLoginSuccess }) => {
                     <form className="auth-form light-theme-form" onSubmit={handleSubmit}>
                         <h1 className="form-title">Welcome Back</h1>
                         <span className="form-subtitle">Enter your credentials to access your dashboard</span>
-                        {error && <div className="auth-error-message">{error}</div>}
+                        {error && (
+                            <div className="auth-feedback auth-feedback--error">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                                {error}
+                            </div>
+                        )}
 
                         <input type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleInputChange} required />
                         <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleInputChange} required />

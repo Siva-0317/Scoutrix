@@ -673,3 +673,47 @@
         margin-top: 1rem;
     }
 }
+
+/* ── Inline feedback banners (error & success) ── */
+.auth-feedback {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    margin-bottom: 0.75rem;
+    animation: feedbackSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+}
+
+@keyframes feedbackSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-feedback--error {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #dc2626;
+}
+
+.auth-feedback--success {
+    background: rgba(0, 200, 120, 0.08);
+    border: 1px solid rgba(0, 200, 120, 0.25);
+    color: #059669;
+}
+
+.auth-feedback svg {
+    flex-shrink: 0;
+}

@@ -8,6 +8,7 @@ const postRoutes = require('./routes/post.routes');
 const userRoutes = require('./routes/user.routes');
 const opportunityRoutes = require('./routes/opportunity.routes');
 const recruitRoutes = require('./routes/recruit.routes');
+const translateRoutes = require('./routes/translate.routes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api', postRoutes);
 app.use('/api', userRoutes);
 app.use('/api/opportunities', opportunityRoutes);
 app.use('/api/recruit', recruitRoutes);
+app.use('/api/translate', translateRoutes);
 
 // A simple health-check route to test the server
 app.get('/health', (req, res) => {

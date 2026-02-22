@@ -3,6 +3,7 @@ import ExplorePage from './ExplorePage';
 import AIVideoAnalysis from './AIVideoAnalysis';
 import PostPage from './PostPage';
 import ProfilePage from './ProfilePage';
+import Leaderboard from './Leaderboard';
 import './AthleteDashboard.css';
 
 /* ─── Nav item definitions ─────────────────────────────────────── */
@@ -74,6 +75,21 @@ const NAV_ITEMS = [
             </svg>
         ),
     },
+    {
+        id: 'leaderboard',
+        label: 'Rankings',
+        color: '#fbbf24',
+        icon: (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+            </svg>
+        ),
+        iconFilled: (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 20V10a1 1 0 0 0-2 0v10h2zm-6 0V4a1 1 0 0 0-2 0v16h2zm-6 0v-6a1 1 0 0 0-2 0v6h2z" />
+            </svg>
+        ),
+    },
 ];
 
 /* ─── Placeholder for unbuilt sections ─────────────────────────── */
@@ -139,6 +155,7 @@ const AthleteDashboard = ({ user }) => {
             case 'analysis': return <AIVideoAnalysis />;
             case 'post': return <PostPage user={user} />;
             case 'profile': return <ProfilePage user={user} />;
+            case 'leaderboard': return <Leaderboard theme={theme} />;
             default: return null;
         }
     };
