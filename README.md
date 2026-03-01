@@ -261,4 +261,3 @@ Talent has no address.
 * [@PI-Prasaad-Krishna](https://github.com/PI-Prasaad-Krishna)
 * [@Risha-Jayaraj](https://github.com/Risha-Jayaraj)
 * [@Abhinav-anil-5670](https://github.com/Abhinav-Anil-5670)
-* [@Siva-0317](https://github.com/Siva-0317)
